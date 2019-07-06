@@ -3,13 +3,56 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start:react": "react-scripts start",
+    "start": "concurrently -k \"BROWSER=none yarn start:react\" \"wait-on http://localhost:3000 && electron .\""
+  },
   "dependencies": {
     "electron": "^5.0.4",
     "electron-is-dev": "^1.1.0",
     "node-ipc": "^9.1.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-helmet": "^5.2.1",
+    "react-scripts": "^3.0.1",
     "uuid": "^3.3.2"
   },
-  "scripts": {
-    "start": "electron ."
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "husky": "^2.7.0",
+    "lint-staged": "^8.2.1",
+    "node-sass": "^4.12.0",
+    "prettier": "^1.18.2",
+    "prop-types": "^15.7.2",
+    "wait-on": "^3.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": true,
+    "singleQuote": true,
+    "jsxBracketSameLine": true
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

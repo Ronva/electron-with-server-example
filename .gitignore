@@ -1,1 +1,15 @@
 node_modules
+build
+
+# logs
+*.log*
+
+# env
+.env
+.env.*
+!.env.sample
+
+# misc
+.vscode
+.idea
+.DS_Store

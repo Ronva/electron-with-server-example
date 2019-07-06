@@ -1,12 +1,13 @@
-let electron = require('electron')
-let { app, BrowserWindow } = require('electron')
-let { fork } = require('child_process')
-let findOpenSocket = require('./find-open-socket')
-let isDev = require('electron-is-dev')
+let electron = require('electron');
+let { app, BrowserWindow } = require('electron');
+let { fork } = require('child_process');
+let findOpenSocket = require('./find-open-socket');
+let isDev = require('electron-is-dev');
+let path = require('path');
 
-let clientWin
-let serverWin
-let serverProcess
+let clientWin;
+let serverWin;
+let serverProcess;
 
 function createWindow(socketName) {
   clientWin = new BrowserWindow({
@@ -16,15 +17,17 @@ function createWindow(socketName) {
       nodeIntegration: false,
       preload: __dirname + '/client-preload.js'
     }
-  })
+  });
 
-  clientWin.loadFile('client-index.html')
+  isDev
+    ? clientWin.loadURL('http://localhost:3000')
+    : clientWin.loadFile(path.join(__dirname, 'build/index.js'));
 
   clientWin.webContents.on('did-finish-load', () => {
     clientWin.webContents.send('set-socket', {
       name: serverSocket
-    })
-  })
+    });
+  });
 }
 
 function createBackgroundWindow(socketName) {
@@ -37,14 +40,14 @@ function createBackgroundWindow(socketName) {
     webPreferences: {
       nodeIntegration: true
     }
-  })
-  win.loadURL(`file://${__dirname}/server-dev.html`)
+  });
+  win.loadURL(`file://${__dirname}/server-dev.html`);
 
   win.webContents.on('did-finish-load', () => {
-    win.webContents.send('set-socket', { name: socketName })
-  })
+    win.webContents.send('set-socket', { name: socketName });
+  });
 
-  serverWin = win
+  serverWin = win;
 }
 
 function createBackgroundProcess(socketName) {
@@ -52,28 +55,28 @@ function createBackgroundProcess(socketName) {
     '--subprocess',
     app.getVersion(),
     socketName
-  ])
+  ]);
 
   serverProcess.on('message', msg => {
-    console.log(msg)
-  })
+    console.log(msg);
+  });
 }
 
 app.on('ready', async () => {
-  serverSocket = await findOpenSocket()
+  serverSocket = await findOpenSocket();
 
-  createWindow(serverSocket)
+  createWindow(serverSocket);
 
   if (isDev) {
-    createBackgroundWindow(serverSocket)
+    createBackgroundWindow(serverSocket);
   } else {
-    createBackgroundProcess(serverSocket)
+    createBackgroundProcess(serverSocket);
   }
-})
+});
 
 app.on('before-quit', () => {
   if (serverProcess) {
-    serverProcess.kill()
-    serverProcess = null
+    serverProcess.kill();
+    serverProcess = null;
   }
-})
+});
