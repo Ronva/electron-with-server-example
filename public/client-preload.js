@@ -8,15 +8,14 @@ let socketPromise = new Promise(resolve => {
   resolveSocketPromise = resolve;
 });
 
-window.IS_DEV = isDev;
-
-window.getServerSocket = () => {
-  return socketPromise;
-};
-
 ipcRenderer.on('set-socket', (event, { name }) => {
   resolveSocketPromise(name);
 });
+
+window.IS_DEV = isDev;
+window.uuid = uuid;
+
+window.getServerSocket = () => socketPromise;
 
 window.ipcConnect = (id, func) => {
   ipc.config.silent = true;
@@ -24,5 +23,3 @@ window.ipcConnect = (id, func) => {
     func(ipc.of[id]);
   });
 };
-
-window.uuid = uuid;

@@ -6,26 +6,28 @@ let isDev = require('electron-is-dev');
 let path = require('path');
 
 let clientWin;
-let serverWin;
 let serverProcess;
 
-function createWindow(socketName) {
+function createWindow(serverSocket) {
   clientWin = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
       nodeIntegration: false,
-      preload: __dirname + '/client-preload.js'
-    }
+      preload: path.join(__dirname + '/client-preload.js'),
+      devTools: isDev,
+    },
   });
 
-  isDev
-    ? clientWin.loadURL('http://localhost:3000')
-    : clientWin.loadFile(path.join(__dirname, 'build/index.js'));
+  clientWin.loadURL(
+    isDev
+      ? 'http://localhost:3000'
+      : `file://${path.join(__dirname, '../build/index.html')}`
+  );
 
   clientWin.webContents.on('did-finish-load', () => {
     clientWin.webContents.send('set-socket', {
-      name: serverSocket
+      name: serverSocket,
     });
   });
 }
@@ -38,13 +40,14 @@ function createBackgroundWindow(socketName) {
     height: 500,
     show: true,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
   win.loadURL(`file://${__dirname}/server-dev.html`);
 
   win.webContents.on('did-finish-load', () => {
     win.webContents.send('set-socket', { name: socketName });
+    win.webContents.openDevTools();
   });
 
   serverWin = win;
@@ -54,7 +57,7 @@ function createBackgroundProcess(socketName) {
   serverProcess = fork(__dirname + '/server.js', [
     '--subprocess',
     app.getVersion(),
-    socketName
+    socketName,
   ]);
 
   serverProcess.on('message', msg => {

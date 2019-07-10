@@ -1,22 +1,12 @@
 import React from 'react';
-import Helmet from 'react-helmet';
 
-import { init, send } from './client-ipc';
-init();
+import { send } from 'utils/client-ipc';
 
 const App = () => {
   return (
-    <>
-      <Helmet>
-        <meta
-          http-equiv="Content-Security-Policy"
-          content="default-src 'self'; style-src 'self' 'unsafe-inline';"
-        />
-      </Helmet>
-      <div className="App">
-        <button onClick={() => send('test')}>Nice</button>
-      </div>
-    </>
+    <div className="App">
+      <button onClick={() => send('test')}>Nice</button>
+    </div>
   );
 };
 

@@ -66,10 +66,11 @@ export const send = (name, args) => {
   return new Promise((resolve, reject) => {
     let id = window.uuid.v4();
     replyHandlers.set(id, { resolve, reject });
+    const message = JSON.stringify({ id, name, args });
     if (socketClient) {
-      socketClient.emit('message', JSON.stringify({ id, name, args }));
+      socketClient.emit('message', message);
     } else {
-      messageQueue.push(JSON.stringify({ id, name, args }));
+      messageQueue.push(message);
     }
   });
 };

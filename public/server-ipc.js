@@ -1,6 +1,6 @@
 const ipc = require('node-ipc');
 
-function init(socketName, handlers) {
+const init = (socketName, handlers) => {
   ipc.config.id = socketName;
   ipc.config.silent = true;
 
@@ -41,10 +41,10 @@ function init(socketName, handlers) {
   });
 
   ipc.server.start();
-}
+};
 
-function send(name, args) {
+const send = (name, args) => {
   ipc.server.broadcast('message', JSON.stringify({ type: 'push', name, args }));
-}
+};
 
 module.exports = { init, send };
