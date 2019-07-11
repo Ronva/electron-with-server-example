@@ -1,4 +1,4 @@
-let electron = require('electron');
+require('electron');
 let { app, BrowserWindow } = require('electron');
 let { fork } = require('child_process');
 let findOpenSocket = require('./find-open-socket');
@@ -7,6 +7,12 @@ let path = require('path');
 
 let clientWin;
 let serverProcess;
+
+const extensions = {
+  'React Developer Tools': path.join(
+    __dirname + '/../extensions/ReactDevTools'
+  ),
+};
 
 function createWindow(serverSocket) {
   clientWin = new BrowserWindow({
@@ -21,7 +27,7 @@ function createWindow(serverSocket) {
 
   clientWin.loadURL(
     isDev
-      ? 'http://localhost:3000'
+      ? 'http://localhost:9001'
       : `file://${path.join(__dirname, '../build/index.html')}`
   );
 
@@ -43,6 +49,7 @@ function createBackgroundWindow(socketName) {
       nodeIntegration: true,
     },
   });
+
   win.loadURL(`file://${__dirname}/server-dev.html`);
 
   win.webContents.on('did-finish-load', () => {
@@ -67,11 +74,16 @@ function createBackgroundProcess(socketName) {
 
 app.on('ready', async () => {
   serverSocket = await findOpenSocket();
-
   createWindow(serverSocket);
 
   if (isDev) {
     createBackgroundWindow(serverSocket);
+
+    Object.entries(extensions).forEach(([name, path]) => {
+      if (!BrowserWindow.getExtensions().hasOwnProperty(name)) {
+        BrowserWindow.addExtension(path);
+      }
+    });
   } else {
     createBackgroundProcess(serverSocket);
   }

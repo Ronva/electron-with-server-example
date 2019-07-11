@@ -4,8 +4,8 @@ import { send } from 'utils/client-ipc';
 
 const App = () => {
   return (
-    <div className="App">
-      <button onClick={() => send('test')}>Nice</button>
+    <div className="app">
+      <button onClick={() => send('nice')}>Nice</button>
     </div>
   );
 };

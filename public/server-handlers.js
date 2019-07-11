@@ -1,7 +1,7 @@
 let handlers = {};
 
-handlers.test = async () => {
-  console.log('nice');
+handlers.nice = async () => {
+  console.log('Nice!');
 };
 
 module.exports = handlers;

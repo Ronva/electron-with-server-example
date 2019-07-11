@@ -9,9 +9,9 @@
   "homepage": "./",
   "license": "MIT",
   "scripts": {
-    "start:react": "react-scripts start",
+    "start:react": "PORT=9001 react-scripts start",
     "start:electron": "electron public/electron.js",
-    "start": "concurrently -k 'BROWSER=none yarn start:react' 'wait-on http://localhost:3000 && yarn start:electron'",
+    "start": "concurrently -k 'BROWSER=none yarn start:react' 'wait-on http://localhost:9001 && yarn start:electron'",
     "build:react": "react-scripts build",
     "dist": "yarn build:react && build -m",
     "postinstall": "electron-builder install-app-deps",
@@ -21,10 +21,10 @@
   },
   "dependencies": {
     "electron-is-dev": "^1.1.0",
+    "electron-utils": "^1.0.9",
     "node-ipc": "^9.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-helmet": "^5.2.1",
     "react-scripts": "^3.0.1",
     "uuid": "^3.3.2"
   },
